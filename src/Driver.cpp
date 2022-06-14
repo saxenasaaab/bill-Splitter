@@ -97,6 +97,10 @@ unordered_map<string,User*> mapFromNameToUserObject;
 		}
 		mapFromNameToUserObject[name]->simplify();
 	}
+	void simplifyForAll(){
+		for(auto itr=mapFromNameToUserObject.begin();itr!=mapFromNameToUserObject.end();itr++)
+			itr->second->simplify();
+	}
 	void showExpenditureByUserAndTag(){
 		string name;
 		cout<<"Enter the name of the user: ";
@@ -127,19 +131,21 @@ int main(){
 			cout<<"Please choose one of the following options:\n";
 			cout<<"1. Add a new User\n";
 			cout<<"2. Add a new expense\n";
-			cout<<"3. Simplify expenses and look at a netted balance sheet of a User\n";
-			cout<<"4. Show the expenditure by tag for a User\n";
-			cout<<"5. Show total owed/owes and balance of a User\n";
-			cout<<"6. Exit the program\n";
+			cout<<"3. Simplify expenses and look at the netted balance sheet of a User\n";
+			cout<<"4. Simplify the expenses for all Users and look at respective netted balance sheets\n";
+			cout<<"5. Show the expenditure by tag for a User\n";
+			cout<<"6. Show total owed/owes and balance of a User\n";
+			cout<<"7. Exit the program\n";
 			cout<<"Please enter a choice: ";
 			cin>>choice;
 			switch(choice){
 			case 1: addNewUser(); break;
 			case 2: addNewExpense(); break;
 			case 3: simplifyForUserAndDisplay(); break;
-			case 4: showExpenditureByUserAndTag(); break;
-			case 5: showNetBalance(); break;
-			case 6: exit(0);
+			case 4: simplifyForAll(); break;
+			case 5: showExpenditureByUserAndTag(); break;
+			case 6: showNetBalance(); break;
+			case 7: exit(0);
 			default: cout<<"You seem to have entered an invalid option. Please enter again.\n\n"; break;
 			}
 		}
