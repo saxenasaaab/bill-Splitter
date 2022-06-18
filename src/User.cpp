@@ -62,9 +62,11 @@ void User::addOwedExpense(vector<string> usersToBeSplitWith,vector<string> ratio
 		tagCount[tag]=perUnitAmount*stoi(ratios[0]);
 	cout<<"Updated tag amount for "<<tag<<" is "<<tagCount[tag]<<"\n";
 }
-int User::simplifyTransactions(vector<string>& allTransactions){
+
+int User::simplifyTransactions(string name){
 	int finalAmount=0;
-	for(auto x:allTransactions)
+	vector<string> transactionsWithThisUser = transactions[name];
+	for(auto x:transactionsWithThisUser)
 		finalAmount+=stoi(x);
 	return finalAmount;
 }
@@ -72,7 +74,7 @@ void User::simplify(){
 	cout<<"\nStarting the netting of transactions for "<<name<<":\n";
 	for(auto x:transactions){
 		cout<<"Transactions with "<<x.first<<"\n";
-		int answer = simplifyTransactions(x.second);
+		int answer = simplifyTransactions(x.first);
 		cout<<"For user "<<x.first<<", the net amount owed/owes is "<<answer<<"\n";
 	}
 }
@@ -81,4 +83,14 @@ void User::expenditureByTag(string tag){
 		cout<<"The user has spent "<<tagCount[tag]<<" on "<<tag<<" so far!";
 	else
 		cout<<"The user does not have transaction involved with this tag!\n";
+}
+void User::makePaymentToUser(string name, int amount){
+	transactions[name].push_back(to_string(amount));
+	total_owes-=amount;
+	balanceOut();
+}
+void User::receivePaymentFromUser(string name, int amount){
+	transactions[name].push_back(to_string(-1*amount));
+	total_owed-=amount;
+	balanceOut();
 }

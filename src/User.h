@@ -32,9 +32,11 @@ public:
 	void addOwesExpense(string name, int multiplier, int perUnitAmount, string tag);
 	//Expense when this user spends
 	void addOwedExpense(vector<string> usersToBeSplitWith,vector<string> ratios,int amount,string tag);
-	int simplifyTransactions(vector<string>& allTransactions);
+	int simplifyTransactions(string name);
 	void simplify();
 	void expenditureByTag(string tag);
+	void makePaymentToUser(string name, int amount);
+	void receivePaymentFromUser(string name, int amount);
 	virtual ~User(){
 	}
 };
