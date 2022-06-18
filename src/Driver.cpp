@@ -124,6 +124,41 @@ unordered_map<string,User*> mapFromNameToUserObject;
 		}
 		mapFromNameToUserObject[name]->getBalanceDetails();
 	}
+	void settleBalance(){
+		string sender;
+		cout<<"\nEnter the name of the first User: ";
+		cin>>sender;
+		if(mapFromNameToUserObject.find(sender)==mapFromNameToUserObject.end()){
+			cout<<"User "<<sender<<" does not exist!";
+			return;
+		}
+		string receiver;
+		cout<<"\nEnter the name of the second User: ";
+		cin>>sender;
+		if(mapFromNameToUserObject.find(sender)==mapFromNameToUserObject.end()){
+			cout<<"User "<<receiver<<" does not exist!";
+			return;
+		}
+		int senderToReceiverAmount = mapFromNameToUserObject[sender]->simplifyTransactions(receiver);
+		if(senderToReceiverAmount<0)
+			cout<<"\n"<<sender<<" owes "<<(-1*senderToReceiverAmount)<<" to "<<receiver;
+		else
+			cout<<"\n"<<receiver<<" owes "<<senderToReceiverAmount<<" to "<<sender;
+		string optionToSettle;
+		cout<<"\nDo you want to settle the balance between "<<sender<<" and "<<receiver<<"? (Y/N)";
+		cin>>optionToSettle;
+		if(optionToSettle=="Y"){
+			if(senderToReceiverAmount<0){
+				mapFromNameToUserObject[sender]->makePaymentToUser(receiver, senderToReceiverAmount);
+				mapFromNameToUserObject[receiver]->receivePaymentFromUser(sender, senderToReceiverAmount);
+			}
+			else{
+				mapFromNameToUserObject[receiver]->makePaymentToUser(sender, senderToReceiverAmount);
+				mapFromNameToUserObject[sender]->receivePaymentFromUser(receiver, senderToReceiverAmount);
+			}
+			cout<<"\nBalance settled!";
+		}
+	}
 int main(){
 		int choice;
 		cout<<"Hello! Welcome to the Bill Splitting Application!\n";
@@ -135,7 +170,8 @@ int main(){
 			cout<<"4. Simplify the expenses for all Users and look at respective netted balance sheets\n";
 			cout<<"5. Show the expenditure by tag for a User\n";
 			cout<<"6. Show total owed/owes and balance of a User\n";
-			cout<<"7. Exit the program\n";
+			cout<<"7. Show and settle balance between two Users\n";
+			cout<<"8. Exit the program\n";
 			cout<<"Please enter a choice: ";
 			cin>>choice;
 			switch(choice){
@@ -145,7 +181,8 @@ int main(){
 			case 4: simplifyForAll(); break;
 			case 5: showExpenditureByUserAndTag(); break;
 			case 6: showNetBalance(); break;
-			case 7: exit(0);
+			case 7: settleBalance(); break;
+			case 8: exit(0);
 			default: cout<<"You seem to have entered an invalid option. Please enter again.\n\n"; break;
 			}
 		}
