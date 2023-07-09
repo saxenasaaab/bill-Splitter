@@ -19,3 +19,9 @@ Features to be added in the future:
 3. Introduce a parameter for date so that expenses can be tracked on regular basis based on tag
 4. Introduce support for multiple currencies which are to be converted in real time.
 5. Settlement of bills - !!ADDED!!
+6. Add database support to maintain state across sessions - !!ADDED!!
+
+Steps to build the application:
+1. Import "json.hpp" from nlohmann/json and add it to the src folder
+2. Run the compile.sh present in the root directory. (Script uses g++)
+

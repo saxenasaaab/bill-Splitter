@@ -5,9 +5,105 @@
  *      Author: 91991
  */
 #include "user.h"
+#include "json.hpp"
+#include <iostream>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <fstream>
 
+using namespace std;
+using json = nlohmann::json;
+
+string databaseFileName = "database/sampledatabase.json";
 unordered_map<string,User*> mapFromNameToUserObject;
 
+	void fromArrayToUserObject(json jsonObject){
+		unordered_map<string,int> tagMap;
+		string name=jsonObject.at("name");
+		int balance=jsonObject.at("balance");
+		int total_owed=jsonObject.at("total_owed");
+		int total_owes=jsonObject.at("total_owes");
+		json tagArray = jsonObject.at("tags");
+		for(const auto& tag:tagArray){
+			string tagName=tag.at("tagName");
+			int tagAmount=tag.at("tagAmount");
+			tagMap[tagName]=tagAmount;
+		}
+		User* loadedUser = new User(name,balance,total_owed,total_owes,tagMap);
+		mapFromNameToUserObject[name]=loadedUser;
+	}
+	void writeToDatabase(json jsonDataToWrite){
+		ofstream file(databaseFileName);
+		if(file.is_open()){
+			file<<jsonDataToWrite.dump();
+			file.close();
+		}
+	}
+	void populateTagArray(json& tagArray, unordered_map<string,int> tagMap){
+		for(const auto& tagEntry: tagMap){
+			json arrayEntry;
+			arrayEntry["tagName"]=tagEntry.first;
+			arrayEntry["tagAmount"]=tagEntry.second;
+			tagArray.push_back(arrayEntry);
+		}
+	}
+	json connectToDatabaseAndGetJson(){
+		cout<<"Opening file\n";
+		ifstream file(databaseFileName);
+		cout<<"Beginning to parse in json\n";
+		json databaseInJson=json::parse(file);
+		//file>>databaseInJson;
+		file.close();
+		return databaseInJson;
+	}
+	/*
+	This method loads all the user data from database (json file), to memory (map)
+	This is okay for short fun apps, but not scalable.
+	*/
+	void loadUserInfoFromDatabase(){
+		json databaseInJson=connectToDatabaseAndGetJson();
+		int existingNumberOfUsers=databaseInJson.at("numberOfUsers");
+		cout<<"There are currently "<<existingNumberOfUsers<<" number of users in database.\n";
+		if(existingNumberOfUsers>0){
+			json arrayOfUsers=databaseInJson.at("users");
+			for(const auto& user:arrayOfUsers){
+				fromArrayToUserObject(user);
+			}
+		}
+	}
+	/*
+	This method updates the database after the session is closed.  
+	Memory (map) -> database (json file)
+	*/
+	void updateDatabase(){
+		json databaseToJson;//=connectToDatabaseAndGetJson();
+		databaseToJson.clear();
+		json usersArray=json::array();
+		int numberOfUsers=0;
+		
+		for(const auto& userPair:mapFromNameToUserObject){
+			numberOfUsers++;
+			string userName=userPair.first;
+			int balance=userPair.second->getBalance();
+			int total_owed=userPair.second->getBalance();
+			int total_owes=userPair.second->getBalance();
+			unordered_map<string,int> tagMap = userPair.second->getTagMap();
+			json tagArray = json::array();
+			populateTagArray(tagArray,tagMap);
+			json userJson;
+			userJson["name"]=userName;
+			userJson["balance"]=balance;
+			userJson["total_owes"]=total_owes;
+			userJson["total_owed"]=total_owed;
+			userJson["tags"]=tagArray;
+			usersArray.push_back(userJson);
+		}
+		databaseToJson["numberOfUsers"]=numberOfUsers;
+		databaseToJson["users"]=usersArray;
+		cout<<"There are now "<<numberOfUsers<<" number of users in database.\n";
+		writeToDatabase(databaseToJson);
+	}
 	void putListToVector(string list, vector<string>& vec){
 		string temp="";
 		for(unsigned int i=0;i<list.size();i++){
@@ -159,9 +255,20 @@ unordered_map<string,User*> mapFromNameToUserObject;
 			cout<<"\nBalance settled!";
 		}
 	}
+	void updateDatabaseAndExit(){
+		cout<<"Updating database now...\n";
+		updateDatabase();
+		cout<<"Exiting the program!\n";
+		exit(0);
+	}
+
 int main(){
+
 		int choice;
 		cout<<"Hello! Welcome to the Bill Splitting Application!\n";
+		cout<<"Retrieving user information from database...\n";
+		loadUserInfoFromDatabase();
+		cout<<"Finished loading information. Starting up the application...\n";
 		while(true){
 			cout<<"Please choose one of the following options:\n";
 			cout<<"1. Add a new User\n";
@@ -182,7 +289,7 @@ int main(){
 			case 5: showExpenditureByUserAndTag(); break;
 			case 6: showNetBalance(); break;
 			case 7: settleBalance(); break;
-			case 8: exit(0);
+			case 8: updateDatabaseAndExit(); break;
 			default: cout<<"You seem to have entered an invalid option. Please enter again.\n\n"; break;
 			}
 		}
