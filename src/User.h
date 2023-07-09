@@ -25,7 +25,12 @@ class User {
 
 public:
 	User(string name);
+	User(string name, int balance, int total_owed, int total_owes, unordered_map<string,int> tagCount);
 	void getBalanceDetails();
+	int getBalance();
+	int getTotalOwed();
+	int getTotalOwes();
+	unordered_map<string,int> getTagMap();
 	void balanceOut();
 	int getTotalUnits(vector<string> ratios);
 	//Expense when some other spends and this user is involved

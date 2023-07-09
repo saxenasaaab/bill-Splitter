@@ -12,11 +12,37 @@ User::User(string name){
 		this->total_owed=0;
 		this->total_owes=0;
 	}
+
+User::User(string name, int balance, int total_owed, int total_owes, unordered_map<string,int> tagCount){
+	this->name=name;
+	this->balance=balance;
+	this->total_owed=total_owed;
+	this->total_owes=total_owes;
+	this->tagCount=tagCount;
+}
+
 void User::getBalanceDetails(){
 	cout<<"Total owes for "<<name<<" is "<<total_owes<<"\n";
 	cout<<"Total owed for "<<name<<" is "<<total_owed<<"\n";
 	cout<<"Net balance for "<<name<<" is "<<balance<<"\n";
 }
+
+int User::getTotalOwes(){
+	return this->total_owes;
+}
+
+int User::getTotalOwed(){
+	return this->total_owed;
+}
+
+int User::getBalance(){
+	return this->balance;
+}
+
+unordered_map<string,int> User::getTagMap(){
+	return this->tagCount;
+}
+
 void User::balanceOut(){
 	balance=total_owes-total_owed;
 }
