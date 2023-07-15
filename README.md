@@ -24,5 +24,7 @@ Features to be added in the future:
 
 Steps to build the application:
 1. Import "json.hpp" from nlohmann/json and add it to the src folder
-2. Run the compile.sh present in the root directory. (Script uses g++)
+2. Add your http://api.exchangeratesapi.io API Key to src/APIKey.txt
+3. Run the compile.sh present in the root directory. (Script uses g++)
+
 
