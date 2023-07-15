@@ -1,1 +1,101 @@
-{"numberOfUsers":4,"users":[{"balance":333,"name":"Amulya","tags":[{"tagAmount":333,"tagName":"food"}],"total_owed":333,"total_owes":333},{"balance":200,"name":"Gurjeet","tags":[{"tagAmount":200,"tagName":"shopping"},{"tagAmount":200,"tagName":"food"}],"total_owed":200,"total_owes":200},{"balance":333,"name":"Arjun","tags":[{"tagAmount":333,"tagName":"food"}],"total_owed":333,"total_owes":333},{"balance":-666,"name":"Aditya","tags":[{"tagAmount":200,"tagName":"shopping"},{"tagAmount":433,"tagName":"food"}],"total_owed":-666,"total_owes":-666}]}
+{
+  "numberOfUsers": 5,
+  "users": [
+    {
+      "balance": 40546.29077710865,
+      "name": "Aditya",
+      "tags": [
+        {
+          "tagAmount": 147989,
+          "tagName": "cars"
+        },
+        {
+          "tagAmount": 10595,
+          "tagName": "leisure"
+        },
+        {
+          "tagAmount": 200,
+          "tagName": "shopping"
+        },
+        {
+          "tagAmount": 433,
+          "tagName": "food"
+        }
+      ],
+      "total_owed": 40546.29077710865,
+      "total_owes": 40546.29077710865
+    },
+    {
+      "balance": 40546.29077710863,
+      "name": "Amulya",
+      "tags": [
+        {
+          "tagAmount": 255433,
+          "tagName": "cars"
+        },
+        {
+          "tagAmount": 333,
+          "tagName": "food"
+        }
+      ],
+      "total_owed": 40546.29077710863,
+      "total_owes": 40546.29077710863
+    },
+    {
+      "balance": -15627,
+      "name": "Akshay",
+      "tags": [
+        {
+          "tagAmount": 4464,
+          "tagName": "leisure"
+        }
+      ],
+      "total_owed": -15627,
+      "total_owes": -15627
+    },
+    {
+      "balance": 40546.29077710865,
+      "name": "Gurjeet",
+      "tags": [
+        {
+          "tagAmount": 362876,
+          "tagName": "cars"
+        },
+        {
+          "tagAmount": 6964,
+          "tagName": "leisure"
+        },
+        {
+          "tagAmount": 200,
+          "tagName": "shopping"
+        },
+        {
+          "tagAmount": 200,
+          "tagName": "food"
+        }
+      ],
+      "total_owed": 40546.29077710865,
+      "total_owes": 40546.29077710865
+    },
+    {
+      "balance": -121638.87233132594,
+      "name": "Arjun",
+      "tags": [
+        {
+          "tagAmount": 470320,
+          "tagName": "cars"
+        },
+        {
+          "tagAmount": 3065,
+          "tagName": "leisure"
+        },
+        {
+          "tagAmount": 333,
+          "tagName": "food"
+        }
+      ],
+      "total_owed": -121638.87233132594,
+      "total_owes": -121638.87233132594
+    }
+  ]
+}

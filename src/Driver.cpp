@@ -14,16 +14,61 @@
 
 using namespace std;
 using json = nlohmann::json;
-
 string databaseFileName = "database/sampledatabase.json";
 unordered_map<string,User*> mapFromNameToUserObject;
+const char* temporaryFileName="FXExchangeAPIResponse.json";
+const char* exchangeRatesAPIKeyFilePath="src/APIKey.txt";
+string CURL = "curl";
+string exchangeRatesAPIPath = "http://api.exchangeratesapi.io/v1/latest";
+string accessKeyAdder = "?access_key=";
 
+    string getAccessKeyFromFileSystem(){
+        ifstream accessKeyFile(exchangeRatesAPIKeyFilePath);
+        string accessKey;
+        if(accessKeyFile.is_open()){
+            getline(accessKeyFile,accessKey);
+            accessKeyFile.close();
+        }
+        return accessKey;
+    }
+
+    json getAllRates(string command){
+        string redirectCommand = std::string(command) + " > " + temporaryFileName;
+        int result = system(redirectCommand.c_str());
+        if (result == -1) {
+            cerr<<"Error executing command."<<endl;
+            json emptyResponse;
+            return emptyResponse;
+        }
+        ifstream file(temporaryFileName);
+        string output((istreambuf_iterator<char>(file)),istreambuf_iterator<char>());
+        json dataFromString = json::parse(output);
+        file.close();
+        remove(temporaryFileName);
+        return dataFromString;
+    }
+	double getCurrencyEquivalent(double amount, string baseCurrency, string quoteCurrency){
+		string curlCommandInput = CURL+" "+exchangeRatesAPIPath+accessKeyAdder;
+        string accesKey = getAccessKeyFromFileSystem();
+        curlCommandInput+=accesKey;
+		cout<<"CURL command is: "<<curlCommandInput<<endl;
+        json response = getAllRates(curlCommandInput);
+		cout<<"Response: "<<response<<endl;
+        json rates = response.at("rates");
+        double baseRate = rates.at(baseCurrency);
+        cout<<"baseRate is: "<<baseRate<<endl;
+        double quoteRate = rates.at(quoteCurrency);
+        cout<<"quoteRate is: "<<quoteRate<<endl;
+        double finalAmount = ((double) quoteRate/baseRate)*amount;
+        cout<<"converted amount is: "<<finalAmount<<endl;
+        return finalAmount;
+	}
 	void fromArrayToUserObject(json jsonObject){
 		unordered_map<string,int> tagMap;
 		string name=jsonObject.at("name");
-		int balance=jsonObject.at("balance");
-		int total_owed=jsonObject.at("total_owed");
-		int total_owes=jsonObject.at("total_owes");
+		double balance=jsonObject.at("balance");
+		double total_owed=jsonObject.at("total_owed");
+		double total_owes=jsonObject.at("total_owes");
 		json tagArray = jsonObject.at("tags");
 		for(const auto& tag:tagArray){
 			string tagName=tag.at("tagName");
@@ -85,9 +130,9 @@ unordered_map<string,User*> mapFromNameToUserObject;
 		for(const auto& userPair:mapFromNameToUserObject){
 			numberOfUsers++;
 			string userName=userPair.first;
-			int balance=userPair.second->getBalance();
-			int total_owed=userPair.second->getBalance();
-			int total_owes=userPair.second->getBalance();
+			double balance=userPair.second->getBalance();
+			double total_owed=userPair.second->getBalance();
+			double total_owes=userPair.second->getBalance();
 			unordered_map<string,int> tagMap = userPair.second->getTagMap();
 			json tagArray = json::array();
 			populateTagArray(tagArray,tagMap);
@@ -141,7 +186,8 @@ unordered_map<string,User*> mapFromNameToUserObject;
 		string ratioString="";
 		vector<string> usersToBeSplitWith;
 		vector<string> ratios;
-		int amount;
+		double amount;
+		string currency;
 		string expenseName;
 		string tag;
 		string name;
@@ -168,11 +214,21 @@ unordered_map<string,User*> mapFromNameToUserObject;
 		}
 		cout<<"Enter the amount: ";
 		cin>>amount;
+		cout<<"Enter the currency (e.g. INR/USD/EUR) paid in: ";
+		cin>>currency;
+		/*
+		If currency paid in is not INR, convert it to INR and then add to each user's data
+		*/
+		if(currency!="INR"){
+			cout<<"Converting to INR...\n";
+			double inrEquivalent = getCurrencyEquivalent(amount,currency,"INR");
+			amount=inrEquivalent;
+		}
 		cout<<"Enter the tag of the expense: ";
 		cin>>tag;
 		mapFromNameToUserObject[name]->addOwedExpense(usersToBeSplitWith, ratios, amount, tag);
 		int totalUnits = getTotalUnits(ratios);
-		int perUnitAmount=amount/totalUnits;
+		double perUnitAmount= amount/totalUnits;
 		for(unsigned int i=1;i<ratios.size();i++){
 			if(mapFromNameToUserObject.find(usersToBeSplitWith[i])==mapFromNameToUserObject.end()){
 				cout<<"User "<<usersToBeSplitWith[i]<<" does not exist!";
